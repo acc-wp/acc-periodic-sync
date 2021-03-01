@@ -53,7 +53,7 @@
 							</select>
 						</td>
 						<td style="width:50px">
-							<input type="submit" name="submit" id="submit" class="button button-primary" value="Save Changes">
+							<input type="submit" name="submit" id="submit" class="button button-primary" value="Enregistrer">
 						</td>
 					</tr>
 					<tr>
@@ -70,7 +70,7 @@
 							</select>
 						</td>
 						<td style="width:50px">
-							<input type="submit" name="submit" id="submit" class="button button-primary" value="Save Changes">
+							<input type="submit" name="submit" id="submit" class="button button-primary" value="Enregistrer">
 						</td>
 					</tr>
 					<tr>
@@ -87,7 +87,7 @@
 							</select>
 						</td>
 						<td style="width:50px">
-							<input type="submit" name="submit" id="submit" class="button button-primary" value="Save Changes">
+							<input type="submit" name="submit" id="submit" class="button button-primary" value="Enregistrer">
 						</td>
 					</tr>
 
