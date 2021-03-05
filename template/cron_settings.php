@@ -112,26 +112,40 @@
 
 	$last_group;
 ?>
-	<h2>Cron Manager</h2>
+	<h2>ACC Cron Jobs</h2>
 	<form id="cron_jobs_manager" method="post" action="<?php echo $complete_url; ?>">
 		<input type="hidden" name="option_page" value="acc_cron_list">
 		<input type="hidden" name="action" value="update">
 		<input type="hidden" id="_acc_cron_nonce" name="_acc_cron_nonce" value="796c7766b1">
 		<input type="hidden" name="_wp_http_referer" value="<?php echo $page_url; ?>">
 
-		<!-- <p> <strong style="color:#d33"> Attention. Ceci est une liste de toutes les fonctions qui roulent sur ce site WordPress: modifier à vos risques. </strong></p> 
-		<p> Pour ajouter un job, remplissez le dernier champ vide. Laissez le nom d'une fonction vide pour enlever un job. Les noms doivent être de vraies fonctions déclarées en PHP afin que ça fonctionne. </p>
-		<p> Si vous avez besoin de créer une condition, par exemple "à tous les premiers du mois", il faut d'abord choisir un interval qui ne manquera pas la condition (dans cet exemple: Once daily) et ensuite modifier la fonction avec qu'il y aie un "if" tel que "if today is 1" (si le jour d'aujourd'hui est le premier). </p>
-		<p><strong style="color:#d33">Ces conditions sont donc uniquement applicables en PHP. </strong></p> -->
-		<h2>ACC Cron Jobs <br><sup style="font-size:10px">créés par Karine Frenette-G.</sup></h2>
 		<ul style="list-style:disc; padding-left:2em;">
 			<li>
-				<p> <strong>kfg_acc_expiry_check</strong> &mdash; la fonction cron qui vérifie le statut d'expiration des membres, le premier de chaque mois.</p>
-
+			    <p> <strong>kfg_acc_update_users</strong> &mdash; 
+				Cette tâche importe la liste de membres du site National et ajuste
+				la liste de membres locale en conséquence.  Les champs suivant
+				sont mis à jour selon les renseignements du National: 
+				prénom, nom, ville, no de téléphone, no de cellulaire, courriel, 
+				date de fin d'abonnement, numéro de membre.
+				<ul>
+				<li>Si un membre n'est pas trouvé dans la liste locale, il est
+				créé dans la base de données.</li>
+				<li>Si un membre avait un des rôles expirés dans la liste locale
+				et qu'il est présent sur la liste Nationale, cela veut dire qu'il
+				a renouvelé en retard. Son rôle est ré-initialisé au rôle par
+				défaut des nouveaux membres.</li>
+				<li>La tâche ne fait rien pour le cas où un membre est dans la
+				liste locale mais pas Nationale (abonnement échu). Voir l'autre
+				tâche.</li>
+				</ul>
+			    </p>
 			</li>
 			<li>
-
-				<p> <strong>kfg_acc_update_users</strong> &mdash; la fonction cron qui update les derniers membres.</p>
+				<p> <strong>kfg_acc_expiry_check</strong> &mdash; 
+				Cette tâche examine la liste de membres locale et vérifie si l'abonnement est échu.
+				Si c'est le cas, le rôle est modifié selon la configuration. Lorsque l'abonnement
+				est échu depuis plus d'un mois, le rôle est modifié selon la deuxième configuration.
+			    </p>
 			</li>
 		</ul>
 
@@ -164,16 +178,6 @@
 							>
 						</th>
 						<td>
-							<!-- <input 
-							type="text" 
-							name="interval[<?php echo $key; ?>]" 
-							required
-							value="<?php echo $job[key($job)]["interval"] ?>" 
-							style="background-image: url(&quot;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAAAXNSR0IArs4c6QAAAZ9JREFUOBGVU7uKwkAUPXmID5AttNyFYBGwsLGwFBUFF/wOhfyE5jPcxkZt/IHFxg+wsZJtrFwS8NWIohZm545xNkp8XcjMnbnnnJk790YyTfPTcZwm+z7whEmSNGWwaqPR+Ca4/AqZCO5BX+STkcBTJ5/gp9HLkb2BR34kEoGu6xewlwQ0TUOxWPQXCIVCIhAMBsEeS6y9MbHpOirNlUoF6XQanU4Hq9UKhmHAsiy0Wq2L2DWZ1i+l4Ccg1et1hwJ0zd1uxzGUwn6/98OLPZbiL1vUxA3OZEI8IhOGlfKdTU3+BrThZ5lMBoVCAev1Gr1eD7PZDIFAALIs80NIRNzAT4DIw+EQm80G2WyWQ1KpFHK5nICr1NvezhIR5iyXSyQSCUSjUSiKgnK5jGQyCVVVEYvF0O12oeTz+R+GJfk3L5n8yWTC+yEej3OxwWCA4/GI7XaLfr/P0/jvlis2VadUKvH+IFK73YZt2yCxcDiM6ZR+SuDuI45GI4zHY8zncxwOB05YLBZ8Pg83BajOjEilummEuVeFmtssvgJurPYHGEKbZ/T0eqIAAAAASUVORK5CYII=&quot;); background-repeat: no-repeat; background-attachment: scroll; background-size: 16px 18px; background-position: 98% 50%;" 
-							autocomplete="off"
-							>
-							<br>
-							(en jours: <?php echo number_format( ($job[key($job)]["interval"])/60/60/24, 2, '.', '' ); ?>) -->
 							<?php //list all schedules  ?>
 							<select name="interval[<?php echo $key; ?>]">
 								<?php foreach($cron_schedules as $schedule => $schedule_contents) { ?>
@@ -195,35 +199,7 @@
 					<?php $last_group = $unknownkey; ?>
 
 					<?php	} //foreach cron jobs ?>
-					<?php	} //foreach cron jobs ?>
-					<!-- <tr>
-						<td colspan="3">
-							Remplissez le nom d'un fonction à ajouter aux Cron. Pour juster le délais, il suffira d'éditer la fonction au rechargement de la page.
-						</td>
-					</tr>
-
-					<tr>
-						<th>Fonction/ Hook (PHP)</th>
-					</tr>
-					<tr>
-						<th scope="row">
-							<input 
-							type="text" 
-							name="cron[new]" 
-							value="" 
-							style="background-image: url(&quot;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAASCAYAAABSO15qAAAAAXNSR0IArs4c6QAAAZ9JREFUOBGVU7uKwkAUPXmID5AttNyFYBGwsLGwFBUFF/wOhfyE5jPcxkZt/IHFxg+wsZJtrFwS8NWIohZm545xNkp8XcjMnbnnnJk790YyTfPTcZwm+z7whEmSNGWwaqPR+Ca4/AqZCO5BX+STkcBTJ5/gp9HLkb2BR34kEoGu6xewlwQ0TUOxWPQXCIVCIhAMBsEeS6y9MbHpOirNlUoF6XQanU4Hq9UKhmHAsiy0Wq2L2DWZ1i+l4Ccg1et1hwJ0zd1uxzGUwn6/98OLPZbiL1vUxA3OZEI8IhOGlfKdTU3+BrThZ5lMBoVCAev1Gr1eD7PZDIFAALIs80NIRNzAT4DIw+EQm80G2WyWQ1KpFHK5nICr1NvezhIR5iyXSyQSCUSjUSiKgnK5jGQyCVVVEYvF0O12oeTz+R+GJfk3L5n8yWTC+yEej3OxwWCA4/GI7XaLfr/P0/jvlis2VadUKvH+IFK73YZt2yCxcDiM6ZR+SuDuI45GI4zHY8zncxwOB05YLBZ8Pg83BajOjEilummEuVeFmtssvgJurPYHGEKbZ/T0eqIAAAAASUVORK5CYII=&quot;); background-repeat: no-repeat; background-attachment: scroll; background-size: 16px 18px; background-position: 98% 50%;" 
-							autocomplete="off"
-							>
-
-							<input 
-							type="hidden" 
-							name="group[new]" 
-							value="<?php echo $last_group; ?>" 
-							autocomplete="off"
-							>
-						</th>
-						<td></td>
-					</tr> -->
+					<?php	} //foreach jobs ?>
 
 				</tbody>
 			</table>

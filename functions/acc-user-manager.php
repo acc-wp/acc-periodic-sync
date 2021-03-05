@@ -16,17 +16,6 @@ function kfg_adapt_acc_adminpage(){
 }
 
 
-add_filter( 'cron_schedules', 'cron_add_weekly' );
-
-function cron_add_weekly( $schedules ) {
-	// Adds once weekly to the existing schedules.
-	$schedules['toute_minute'] = array(
-		'interval' => 30, // 60 secondes
-		'display' => __( 'Toutes les minutes' )
-	);
-	return $schedules;
-}
-
 add_action( 'user_register', 'kfg_welcome_email', 10, 1);
 
 function kfg_accUM_add_menu_page () {
@@ -39,14 +28,14 @@ function kfg_accUM_add_menu_page () {
 	);
 	add_options_page( 
 		'ACC Cron Jobs',			//Title
-		'Cron Manager',				//Menu Title
+		'ACC Cron Jobs',			//Menu Title
 		'edit_users',				//Capability
 		'acc_cron_list',			//Slug
 		'kfg_cron_settings_lite'	//Callback
 	);
 	add_options_page( 
 		'ACC Email Templates',		//Title
-		'Email Templates',			//Menu Title
+		'ACC Email Templates',		//Menu Title
 		'edit_users',				//Capability
 		'email_templates',			//Slug
 		'kfg_email_settings'		//Callback
@@ -73,10 +62,23 @@ function kfg_email_settings() {
 }
 
 
- 
+/*
+ * Activation du plugin
+ * Expiry se fera dans 2 minutes, puis chaque semaine par la suite.
+ * Update se fera dans 1 minutes, puis 2x par jour par la suite.
+ */ 
 function kfg_cron_activate() {
-    wp_schedule_event( time(), "toute_minute", 'kfg_acc_expiry_check' );
-    wp_schedule_event( time(), "toute_minute", 'kfg_acc_update_users' );
+	if (!wp_next_scheduled('kfg_acc_expiry_check')) {
+	    wp_schedule_event( time() + 120, "weekly", 'kfg_acc_expiry_check' );
+	} else {
+		error_log("Error activating kfg plugin, kfg_acc_expiry_check was already scheduled");
+	}
+
+	if (!wp_next_scheduled('kfg_acc_update_users')) {
+	    wp_schedule_event( time() + 60, "twicedaily", 'kfg_acc_update_users' );
+	} else {
+		error_log("Error activating kfg plugin, kfg_acc_update_users was already scheduled");
+	}
 }
 
 
@@ -87,43 +89,43 @@ function kfg_cron_deactivate() {
     $timestamp = wp_next_scheduled( 'kfg_acc_update_users' );
     wp_unschedule_event( $timestamp, 'kfg_acc_update_users' );
 
-        wp_unschedule_hook("kfg_acc_update_users");
-        wp_unschedule_hook("kfg_acc_expiry_check");
-        wp_clear_scheduled_hook("kfg_acc_update_users");
-        wp_clear_scheduled_hook("kfg_acc_expiry_check");
+	wp_unschedule_hook("kfg_acc_update_users");
+	wp_unschedule_hook("kfg_acc_expiry_check");
+	wp_clear_scheduled_hook("kfg_acc_update_users");
+	wp_clear_scheduled_hook("kfg_acc_expiry_check");
 }
 
 
 
 //CRON FUNCTIONS
 
-	//code du dev de François
-	//adds check if member expiry date is in the past
-	function check_validation_status($user, $password) {
-	    $userID = $user->ID;
+//code du dev de François
+//adds check if member expiry date is in the past
+function check_validation_status($user, $password) {
+	$userID = $user->ID;
 
-	    $wp_caps = get_user_meta( $userID, 'wp_capabilities', 'true' );
-	    $role = array_keys((array)$wp_caps);
+	$wp_caps = get_user_meta( $userID, 'wp_capabilities', 'true' );
+	$role = array_keys((array)$wp_caps);
 
-	    if($role[0] == "administrator") {
-	    	return $user;
-	    }
-
-	    $expiry= get_user_meta( $userID, 'expiry', 'true' );
-
-	    if(($expiry=='')){
-	      
-	   		 return $user;
-	      }
-
-	    elseif($expiry < date("Y-m-d")){
-	      $error = new WP_Error();
-	      $error->add( 403, 'Oops. Your membership has expired, please renew your membership at <a href="https://www.alpineclubofcanada.ca">www.alpineclubofcanada.ca</a>.' );
-	      return $error;
-	    }
-	    
-	    return $user;
+	if($role[0] == "administrator") {
+		return $user;
 	}
+
+	$expiry= get_user_meta( $userID, 'expiry', 'true' );
+
+	if(($expiry=='')){
+		
+			return $user;
+		}
+
+	elseif($expiry < date("Y-m-d")){
+		$error = new WP_Error();
+		$error->add( 403, 'Oops. Your membership has expired, please renew your membership at <a href="https://www.alpineclubofcanada.ca">www.alpineclubofcanada.ca</a>.' );
+		return $error;
+	}
+	
+	return $user;
+}
 
 
 function kfg_check_validation_status($user) {
@@ -232,25 +234,20 @@ function kfg_welcome_email($user_id) {
 	$test = kfg_send_email( $user_email, 0 );
 }
 
+// Appelé par le timer CRON
 function kfg_acc_expiry_check() {
-	// $date = date('d');
-	// if ($date == '01') {
-		// Ne peut que s'executer le premier du mois
 
-		//Loop dans tous les usagers sauf les admins
-		$all_users = get_users( array(
-			"role__not_in" => "administrator",
+	//Loop dans tous les usagers sauf les admins
+	$all_users = get_users( array(
+		"role__not_in" => "administrator",
+		) );
 
-			) );
-
-		foreach ($all_users as $user) {
-			kfg_check_validation_status($user);
-		}
-
-	// }
-
+	foreach ($all_users as $user) {
+		kfg_check_validation_status($user);
+	}
 }
 
+// Appelé par le timer CRON
 function kfg_acc_update_users() {
 
 	do_action("wpb_sync_acc_users");
