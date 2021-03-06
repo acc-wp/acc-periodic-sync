@@ -4,7 +4,7 @@
 </head>
 <body>
 	<header>
-		<img src="/wp-content/plugins/karinegaufre/assets/images/club-alpin-logo.png" /> 
+		<img src="/wp-content/plugins/acc-periodic-sync/assets/images/club-alpin-logo.png" /> 
 		<h1>Club Alpin du Canada</h1> 
 		<h2>Section Outaouais</h2>
 	</header>

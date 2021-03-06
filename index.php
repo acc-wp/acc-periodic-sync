@@ -2,7 +2,7 @@
 /**
  * Plugin Name: ACC Periodic Sync
  * Description: Periodic synchronization of ACC members list. An add-on to ACC User Importer plugin.
- * Version: 1.3.0
+ * Version: 1.3.1
  * Author: Karine Frenette-G, Francois Bessette
  * Author URI: https://karinegaufre.com/
  * License: GPL2
@@ -27,7 +27,7 @@
 */
 if( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 	define('KFG_BASE_DIR', WP_PLUGIN_DIR . '/' . dirname(plugin_basename(__FILE__)));
-	define('KFG_PLUGIN_DIR', plugins_url() . "/karinegaufre/");
+	define('KFG_PLUGIN_DIR', plugins_url() . "/acc-periodic-sync/");
 
 /**
  * Required files
