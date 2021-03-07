@@ -38,7 +38,7 @@ include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
 
 include_once( KFG_BASE_DIR . '/functions/queues.php' );
 
-if( is_plugin_active( 'razpeel-acc-user-manager-9039b45362c8/acc-importer.php' ) ) {
+if( is_plugin_active( 'acc_user_importer/acc-importer.php' ) ) {
 	include_once( KFG_BASE_DIR . '/functions/acc-user-manager.php' );
 	
 }  //is this plugin activating
