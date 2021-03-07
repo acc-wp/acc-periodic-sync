@@ -2,7 +2,7 @@
 /**
  * Plugin Name: ACC Periodic Sync
  * Description: Periodic synchronization of ACC members list. An add-on to ACC User Importer plugin.
- * Version: 1.3.1
+ * Version: 1.3.2
  * Author: Karine Frenette-G, Francois Bessette
  * Author URI: https://karinegaufre.com/
  * License: GPL2
